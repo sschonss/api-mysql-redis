@@ -30,5 +30,19 @@ Route::get('/users/filter/{name}', 'App\Http\Controllers\UserController@filterBy
 Route::get('/users/filter/{email}', 'App\Http\Controllers\UserController@filterByEmail');
 Route::get('/users/filter/{name}/{email}', 'App\Http\Controllers\UserController@filterByNameAndEmail');
 
-//User Sort Routes
+//User Clear Cache
+Route::get('/users/clear-cache/{key}', 'App\Http\Controllers\UserController@clearCache');
 
+
+//User Temperature Routes
+
+Route::get('/temperature', 'App\Http\Controllers\TemperatureController@index');
+Route::post('/temperature', 'App\Http\Controllers\TemperatureController@store');
+Route::get('/temperature/{id}', 'App\Http\Controllers\TemperatureController@show');
+Route::put('/temperature/{id}', 'App\Http\Controllers\TemperatureController@update');
+Route::delete('/temperature/{id}', 'App\Http\Controllers\TemperatureController@destroy');
+
+//User Temperature Filter Routes
+Route::get('/temperature/filter/{sensor_id}', 'App\Http\Controllers\TemperatureController@filterBySensorId');
+Route::get('/temperature/filter/{date_start}/{date_end}', 'App\Http\Controllers\TemperatureController@filterByDate');
+Route::get('/temperature/filter/{sensor_id}/{date_start}/{date_end}', 'App\Http\Controllers\TemperatureController@filterBySensorIdAndDate');
