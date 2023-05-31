@@ -11,31 +11,44 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    public function setRedis($json, $key)
+    public function setRedis($key, $json)
     {
-        $redis = new \Redis();
+        $redis = new Redis();
         try {
+            $json = json_encode($json);
             $redis->connect($_ENV['REDIS_HOST'], $_ENV['REDIS_PORT']);
+            $redis->set($key, $json, ['EX' => 60]);
         } catch (\Exception $e) {
             return false;
         }
-
-        $redis->set($key, $json);
-
         return true;
     }
 
     public function getRedis($key)
     {
-        $redis = new \Redis();
+        $redis = new Redis();
+        try {
+            $redis->connect($_ENV['REDIS_HOST'], $_ENV['REDIS_PORT']);
+            $json = $redis->get($key);
+            if ($json) {
+                return json_decode($json);
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+
+    }
+
+    public function deleteRedis($key)
+    {
+        $redis = new Redis();
         try {
             $redis->connect($_ENV['REDIS_HOST'], $_ENV['REDIS_PORT']);
         } catch (\Exception $e) {
             return false;
         }
 
-        return $redis->get($key);
+        return $redis->del($key);
     }
-
 
 }
