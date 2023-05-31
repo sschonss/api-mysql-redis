@@ -12,13 +12,15 @@ class UserController extends Controller
     {
         try {
             $users = $this->getRedis('users');
+            $message = 'User List from Redis';
             if (!$users) {
                 $users = User::all();
                 $this->setRedis('users', $users);
+                $message = 'User List from Database';
             }
             return response()->json([
                 'success' => true,
-                'message' => 'User List',
+                'message' => $message,
                 'data' => $users
             ], 200);
         } catch (\Exception $e) {
@@ -63,17 +65,19 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function show(User $user): JsonResponseAlias
+    public function show($id): JsonResponseAlias
     {
         try {
-            $user = $this->getRedis('user_'.$user->id);
+            $user = $this->getRedis('user_'.$id);
+            $message = 'User Details from Redis';
             if (!$user) {
-                $user = User::find($user->id);
-                $this->setRedis('user_'.$user->id, $user);
+                $user = User::find($id);
+                $this->setRedis('user_'.$id, $user);
+                $message = 'User Details from Database';
             }
             return response()->json([
                 'success' => true,
-                'message' => 'User Details',
+                'message' => $message,
                 'data' => $user
             ], 200);
         } catch (\Exception $e) {
@@ -83,6 +87,7 @@ class UserController extends Controller
                 'data' => $e->getMessage()
             ], 500);
         }
+
     }
 
     public function destroy(User $user): JsonResponseAlias
@@ -161,4 +166,22 @@ class UserController extends Controller
             ], 500);
         }
     }
+
+    public function clearCache($key): JsonResponseAlias
+    {
+        try {
+            $this->deleteRedis($key);
+            return response()->json([
+                'success' => true,
+                'message' => 'Cache Cleared',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cache Cleared',
+                'data' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 }
